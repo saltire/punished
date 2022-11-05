@@ -1,8 +1,6 @@
 {
-  "name": "node-typescript-boilerplate",
-  "version": "0.0.0",
-  "description": "Starting point for a Node.js server app with TypeScript",
-  "license": "ISC",
+  "name": "punished",
+  "private": true,
   "scripts": {
     "start": "node built/index.js",
     "watch": "nodemon --watch server -e ts -x \"ts-node --files -r dotenv/config src/index.ts\"",
