@@ -1,9 +1,7 @@
 version: '3.9'
 
 services:
-  app:
-    container_name: app
-    image: app
+  punished-service:
     restart: always
     build:
       context: .

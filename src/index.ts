@@ -1,14 +1,21 @@
-import { createServer } from 'http';
+import express, { Request, Response, NextFunction } from 'express';
+import morgan from 'morgan';
 
-const server = createServer((req, res) => {
-  res.statusCode = 200;
-  res.setHeader('content-type', 'text/plain');
-  res.end('Hello world!');
+import router from './router';
+
+
+const app = express();
+app.use(morgan('dev'));
+
+app.use(router);
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  console.error('Unhandled error:', err);
+  res.sendStatus(500);
 });
 
-const hostname = process.env.HOSTNAME || '0.0.0.0';
-const port = Number(process.env.PORT) || 3000;
-
-server.listen(port, hostname, () => {
-  console.log(`Server running at ${hostname}:${port}`);
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log('Listening on port', port);
 });
