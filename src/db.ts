@@ -101,7 +101,8 @@ export const getUserScore = async (
   .findOne({ guildId, userId });
 
 export const updateUserPoints = async (
-  guildId: string, userId: string, username: string, pointTypeId: string, increment: number,
+  guildId: string, userId: string, username: string, pointTypeId: string, number: number,
+  replace?: boolean,
 ) => (await collection<User>('punishedusers'))
   .findOneAndUpdate(
     {
@@ -113,8 +114,9 @@ export const updateUserPoints = async (
         guildId,
         userId,
         username,
+        ...replace ? { [`points.${pointTypeId}`]: number } : {},
       },
-      $inc: { [`points.${pointTypeId}`]: increment },
+      ...!replace ? { $inc: { [`points.${pointTypeId}`]: number } } : {},
     },
     {
       returnDocument: 'after',

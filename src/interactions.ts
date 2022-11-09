@@ -58,11 +58,12 @@ Promise<APIInteractionResponse | null> => {
       });
     }
 
-    if (name === 'give') {
+    if (['give', 'set'].includes(name)) {
       const userId = getOptionValue(options, 'user');
       const number = getOptionValue(options, 'number');
       const reason = getOptionValue(options, 'reason');
       const pointTypeId = defaultPointTypes[0].id;
+      const replace = name === 'set';
 
       const member = userId && await api.get(`/guilds/${guildId}/members/${userId}`)
         .then(resp => resp.data);
@@ -76,7 +77,7 @@ Promise<APIInteractionResponse | null> => {
       const username = member.nick || member.user.username;
 
       const user = await updateUserPoints(
-        guildId, userId, username, pointTypeId, number);
+        guildId, userId, username, pointTypeId, number, replace);
       if (!user) {
         return messageResponse({ content: 'Sorry, I wasn’t able to update the user. Try again?' });
       }
@@ -85,10 +86,12 @@ Promise<APIInteractionResponse | null> => {
       const reasonText = reason ? ` *(${reason})*` : '';
 
       return messageResponse({
-        content: [
-          `<@${userId}>, you have been given **${number}** ${ptName}${reasonText}.`,
-          `Your total ${pointType.namePlural} are now **${user.points[pointTypeId] || 0}**.`,
-        ].join(' '),
+        content: replace
+          ? `<@${userId}>, your ${pointType.namePlural} have been set to **${number}**${reasonText}.`
+          : [
+            `<@${userId}>, you have been given **${number}** ${ptName}${reasonText}.`,
+            `Your total ${pointType.namePlural} are now **${user.points[pointTypeId] || 0}**.`,
+          ].join(' '),
       });
     }
   }

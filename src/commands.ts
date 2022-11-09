@@ -73,6 +73,41 @@ const buildCommands = (pointTypes: BasePointType[]): Command[] => [
       },
     ].filter(exists) as APIApplicationCommandOption[],
   },
+  {
+    name: 'set',
+    type: ApplicationCommandType.ChatInput,
+    description: 'Set the number of points for a user',
+    default_member_permissions: (PermissionFlagsBits.Administrator).toString(16),
+    options: [
+      {
+        type: ApplicationCommandOptionType.User,
+        name: 'user',
+        description: 'The user to set points for.',
+        required: true,
+      },
+      {
+        type: ApplicationCommandOptionType.Integer,
+        name: 'number',
+        description: 'The number of points to set to.',
+        required: true,
+      },
+      pointTypes.length > 1 ? {
+        type: ApplicationCommandOptionType.String,
+        name: 'type',
+        description: 'The type of points to set.',
+        required: true,
+        choices: pointTypes.map(pointType => ({
+          name: pointType.namePlural,
+          value: pointType.id,
+        })),
+      } : null,
+      {
+        type: ApplicationCommandOptionType.String,
+        name: 'reason',
+        description: 'A reason for setting points on this user, to display in the message.',
+      },
+    ].filter(exists) as APIApplicationCommandOption[],
+  },
 ];
 
 export default buildCommands;
