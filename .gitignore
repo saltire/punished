@@ -1,4 +1,6 @@
-built
-node_modules
-
+/node_modules
+/built
+/dist
+npm-debug.log
 .env
+.vscode

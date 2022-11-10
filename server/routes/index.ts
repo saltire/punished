@@ -1,10 +1,12 @@
 import { verifyKeyMiddleware } from 'discord-interactions';
 import Router from 'express-promise-router';
 
-import api from './api';
-import buildCommands from './commands';
-import { defaultPointTypes } from './db';
-import handleInteraction from './interactions';
+import api from '../lib/api';
+import buildCommands from '../lib/commands';
+import { defaultPointTypes, getOAuthSession } from '../lib/db';
+import handleInteraction from '../lib/interactions';
+
+import auth from './auth';
 
 
 const appId = process.env.DISCORD_APP_ID || '';
@@ -37,3 +39,22 @@ router.get('/commands/update', async (req, res) => {
 
   res.json(data);
 });
+
+// App data
+
+router.get('/guild', async (req, res) => {
+  const oauthSession = await getOAuthSession(req.sessionID);
+
+  if (!oauthSession || oauthSession.expiresAt.valueOf() - Date.now() < 30) {
+    res.json({});
+    return;
+  }
+
+  const { data: guild } = await api.get(`guilds/${oauthSession.guildId}`);
+
+  res.json({ guild });
+});
+
+// OAuth
+
+router.use('/auth', auth);
