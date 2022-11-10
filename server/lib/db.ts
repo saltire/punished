@@ -126,24 +126,23 @@ export const updateUserPoints = async (
 
 // Sessions
 
-export type OAuthSession = {
+export type UserSession = {
   sessionID: string,
   accessToken: string,
   expiresAt: Date,
   refreshToken: string,
   scope: string,
   tokenType: string,
-  guildId: string,
 };
 
-export const getOAuthSession = async (
+export const getUserSession = async (
   sessionID: string,
-) => (await collection<OAuthSession>('oauthsessions'))
+) => (await collection<UserSession>('usersessions'))
   .findOne({ sessionID });
 
-export const saveOAuthSession = async (
-  oauthSession: OAuthSession,
-) => (await collection<OAuthSession>('oauthsessions'))
+export const saveUserSession = async (
+  oauthSession: UserSession,
+) => (await collection<UserSession>('usersessions'))
   .findOneAndUpdate(
     { sessionID: oauthSession.sessionID },
     { $set: oauthSession },

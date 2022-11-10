@@ -17,6 +17,7 @@ module.exports = {
     'function-call-argument-newline': 0,
     'function-paren-newline': 0,
     'jsx-quotes': [2, 'prefer-single'],
+    'no-bitwise': 0,
     'no-cond-assign': [2, 'except-parens'],
     'no-console': 0,
     'no-multi-assign': 0,

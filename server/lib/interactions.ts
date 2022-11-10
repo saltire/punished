@@ -6,7 +6,7 @@ import {
   InteractionType,
 } from 'discord-api-types/v10';
 
-import api from './api';
+import callApi from './api';
 import { defaultPointTypes, getList, updateUserPoints } from './db';
 
 
@@ -65,8 +65,7 @@ Promise<APIInteractionResponse | null> => {
       const pointTypeId = defaultPointTypes[0].id;
       const replace = name === 'set';
 
-      const member = userId && await api.get(`/guilds/${guildId}/members/${userId}`)
-        .then(resp => resp.data);
+      const member = userId && await callApi(`/guilds/${guildId}/members/${userId}`);
 
       const pointType = defaultPointTypes[0];
 

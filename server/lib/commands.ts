@@ -6,15 +6,14 @@ import {
   RESTPostAPIChatInputApplicationCommandsJSONBody as Command,
 } from 'discord-api-types/v10';
 
-import api from './api';
+import callApi from './api';
 import { BasePointType } from './db';
 import { exists } from './utils';
 
 
 const appId = process.env.DISCORD_APP_ID || '';
 
-export const getAppCommands = async () => api.get(`/applications/${appId}/commands`)
-  .then(resp => resp.data);
+export const getAppCommands = async () => callApi(`/applications/${appId}/commands`);
 
 const buildCommands = (pointTypes: BasePointType[]): Command[] => [
   {

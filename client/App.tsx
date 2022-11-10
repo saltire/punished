@@ -6,12 +6,16 @@ import './App.scss';
 
 export default function App() {
   const [loading, setLoading] = useState(false);
-  const [guild, setGuild] = useState<any>(null);
+  const [user, setUser] = useState<any>(null);
+  const [guilds, setGuilds] = useState<any>(null);
 
   useEffect(() => {
     setLoading(true);
-    axios.get<{ guild: any }>('/guild')
-      .then(({ data }) => setGuild(data.guild))
+    axios.get<{ user: any, guilds: any[] }>('/user')
+      .then(({ data }) => {
+        setUser(data.user);
+        setGuilds(data.guilds);
+      })
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
@@ -23,15 +27,21 @@ export default function App() {
       </header>
       <main>
         {loading ? <p>Loading...</p> : (
-          guild ? (
+          user ? (
             <>
-              <p>Logged in server: <strong>{guild.name}</strong></p>
+              <p>Logged in user: <strong>{user.username}</strong></p>
 
-              <p><a href='/connect'>Connect another server</a></p>
-              <p><a href='/logout'>Log out</a></p>
+              <p>
+                User’s guilds:
+                {guilds?.map((guild: any) => (
+                  <span key={guild.id}><br /><strong>{guild.name}</strong></span>
+                ))}
+              </p>
+
+              <p><a href='/auth/logout'>Log out</a></p>
             </>
           ) : (
-            <p><a href='/connect'>Connect your server</a></p>
+            <p><a href='/auth/login'>Log in</a></p>
           )
         )}
       </main>

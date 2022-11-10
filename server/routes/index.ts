@@ -1,9 +1,10 @@
+import { APIGuild } from 'discord-api-types/v10';
 import { verifyKeyMiddleware } from 'discord-interactions';
 import Router from 'express-promise-router';
 
-import api from '../lib/api';
+import callApi from '../lib/api';
 import buildCommands from '../lib/commands';
-import { defaultPointTypes, getOAuthSession } from '../lib/db';
+import { defaultPointTypes, getUserSession } from '../lib/db';
 import handleInteraction from '../lib/interactions';
 
 import auth from './auth';
@@ -28,31 +29,39 @@ router.post('/interactions', verifyKeyMiddleware(publicKey), async (req, res) =>
 // Commands
 
 router.get('/commands', async (req, res) => {
-  const { data } = await api.get(`/applications/${appId}/commands`);
-  res.json(data);
+  res.json(await callApi(`/applications/${appId}/commands`));
 });
 
 router.get('/commands/update', async (req, res) => {
   const commands = buildCommands(defaultPointTypes);
-
-  const { data } = await api.put(`/applications/${appId}/commands`, commands);
-
-  res.json(data);
+  res.json(await callApi(`/applications/${appId}/commands`, { method: 'put', body: commands }));
 });
 
 // App data
 
-router.get('/guild', async (req, res) => {
-  const oauthSession = await getOAuthSession(req.sessionID);
+router.get('/user', async (req, res) => {
+  const userSession = await getUserSession(req.sessionID);
 
-  if (!oauthSession || oauthSession.expiresAt.valueOf() - Date.now() < 30) {
-    res.json({});
+  if (!userSession || userSession.expiresAt.valueOf() - Date.now() < 30) {
+    res.json();
     return;
   }
 
-  const { data: guild } = await api.get(`guilds/${oauthSession.guildId}`);
+  const [user, guilds] = await Promise.all([
+    callApi('users/@me', { token: userSession.accessToken }),
+    callApi<APIGuild[]>('users/@me/guilds', { token: userSession.accessToken })
+      .then(userGuilds => Promise.all(userGuilds
+        .filter(guild => (Number(guild.permissions) & 0x20) === 0x20)
+        .map(async guild => ({
+          ...guild,
+          // Try to get the guild with the bot token, and mark the ones that were successful.
+          hasBot: await callApi(`guilds/${guild.id}`)
+            .then(() => true)
+            .catch(() => false),
+        })))),
+  ]);
 
-  res.json({ guild });
+  res.json({ user, guilds });
 });
 
 // OAuth

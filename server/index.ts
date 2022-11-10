@@ -7,7 +7,7 @@ import client from './client';
 import routes from './routes';
 
 
-const { MONGODB_URI, PORT, SESSION_SECRET } = process.env;
+const { MONGODB_URI, NODE_ENV, PORT, SESSION_SECRET } = process.env;
 
 const app = express();
 app.use(morgan('dev'));
@@ -15,14 +15,14 @@ app.use(morgan('dev'));
 const MongoDBStore = mongodbStore(session);
 const store = new MongoDBStore({
   uri: MONGODB_URI || '',
-  collection: 'sessions',
+  collection: 'expresssessions',
 });
 store.on('error', (err: any) => console.error('Error in MongoDB store:', err));
 app.use(session({
   secret: SESSION_SECRET || 'session-secret-666',
   cookie: {
     maxAge: 1000 * 60 * 60 * 24 * 7,
-    secure: true,
+    secure: NODE_ENV === 'production',
   },
   resave: false,
   saveUninitialized: false,
