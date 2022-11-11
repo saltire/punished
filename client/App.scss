@@ -56,6 +56,16 @@ body {
 
   > p {
     margin-top: 5rem;
+
+    a {
+      padding: .5rem 1rem;
+      border: 1px solid $silver;
+      border-radius: .5rem;
+      background-color: black;
+      box-shadow: 2px 3px 0 0 $orange;
+      color: $silver;
+      text-decoration: none;
+    }
   }
 
   a {

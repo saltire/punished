@@ -19,8 +19,6 @@ const getSessionHash = (sessionID: string) => {
 };
 
 router.get('/login', async (req, res) => {
-  req.session.touch();
-  console.log('login', req.sessionID);
   const qs = queryString.stringify({
     response_type: 'code',
     client_id: appId,
@@ -29,14 +27,13 @@ router.get('/login', async (req, res) => {
       'identify',
     ].join(' '),
     state: getSessionHash(req.sessionID),
-    redirect_uri: `https://${req.headers.host}/auth/callback`,
+    redirect_uri: `https://${req.headers.host}/auth/login/callback`,
   });
 
   res.redirect(`https://discord.com/oauth2/authorize?${qs}`);
 });
 
-router.get('/callback', async (req, res) => {
-  console.log('callback', req.sessionID);
+router.get('/login/callback', async (req, res) => {
   if (req.query.state !== getSessionHash(req.sessionID)) {
     throw new Error('State does not match.');
   }
@@ -58,7 +55,7 @@ router.get('/callback', async (req, res) => {
       client_secret: clientSecret,
       grant_type: 'authorization_code',
       code: req.query.code,
-      redirect_uri: `https://${req.headers.host}/auth/callback`,
+      redirect_uri: `https://${req.headers.host}/auth/login/callback`,
     }),
     { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
 
@@ -78,4 +75,25 @@ router.get('/callback', async (req, res) => {
 
 router.get('/logout', async (req, res) => {
   req.session.regenerate(() => res.redirect('/'));
+});
+
+router.get('/bot', async (req, res) => {
+  const qs = queryString.stringify({
+    client_id: appId,
+    scope: [
+      'applications.commands',
+      'bot',
+    ].join(' '),
+    guild_id: req.query.guildId,
+    disable_guild_select: !!req.query.guildId,
+    // These aren't necessary, but include them so we can redirect back to the app.
+    redirect_uri: `https://${req.headers.host}/auth/bot/callback`,
+    response_type: 'code',
+  });
+
+  res.redirect(`https://discord.com/oauth2/authorize?${qs}`);
+});
+
+router.get('/bot/callback', async (req, res) => {
+  res.redirect('/');
 });

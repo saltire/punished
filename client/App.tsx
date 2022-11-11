@@ -31,7 +31,11 @@ export default function App() {
         </h1>
       </header>
 
-      {loading ? <p>Loading...</p> : <MainPage user={user} guilds={guilds} />}
+      {loading ? <p>Loading...</p> : (
+        !user ? <p><a href='/auth/login'>Log in with <strong>Discord</strong></a></p> : (
+          <MainPage user={user} guilds={guilds} />
+        )
+      )}
     </div>
   );
 }
