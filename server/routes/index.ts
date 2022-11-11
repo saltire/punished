@@ -1,10 +1,11 @@
-import { APIGuild } from 'discord-api-types/v10';
+import { APIGuild, APIUser } from 'discord-api-types/v10';
 import { verifyKeyMiddleware } from 'discord-interactions';
 import Router from 'express-promise-router';
 
+import { defaultPointTypes, getPointTypes } from '../db/pointtypes';
+import { getUserSession } from '../db/usersessions';
 import callApi from '../lib/api';
 import buildCommands from '../lib/commands';
-import { defaultPointTypes, getUserSession } from '../lib/db';
 import handleInteraction from '../lib/interactions';
 
 import auth from './auth';
@@ -48,17 +49,21 @@ router.get('/user', async (req, res) => {
   }
 
   const [user, guilds] = await Promise.all([
-    callApi('users/@me', { token: userSession.accessToken }),
+    callApi<APIUser>('users/@me', { token: userSession.accessToken }),
     callApi<APIGuild[]>('users/@me/guilds', { token: userSession.accessToken })
       .then(userGuilds => Promise.all(userGuilds
         .filter(guild => (Number(guild.permissions) & 0x20) === 0x20)
-        .map(async guild => ({
-          ...guild,
-          // Try to get the guild with the bot token, and mark the ones that were successful.
-          hasBot: await callApi(`guilds/${guild.id}`)
-            .then(() => true)
-            .catch(() => false),
-        })))),
+        .map(async guild => {
+          const [pointTypes, hasBot] = await Promise.all([
+            getPointTypes(guild.id),
+            // Try to access the guild with the bot token, and mark if successful.
+            callApi(`guilds/${guild.id}`)
+              .then(() => true)
+              .catch(() => false),
+          ]);
+
+          return { ...guild, pointTypes, hasBot };
+        }))),
   ]);
 
   res.json({ user, guilds });

@@ -4,16 +4,17 @@ import axios from 'axios';
 import './App.scss';
 import gavelImg from './static/gavel.png';
 import MainPage from './MainPage';
+import { Guild, User } from './types';
 
 
 export default function App() {
   const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState<any>(null);
-  const [guilds, setGuilds] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [guilds, setGuilds] = useState<Guild[] | null>(null);
 
   useEffect(() => {
     setLoading(true);
-    axios.get<{ user: any, guilds: any[] }>('/user')
+    axios.get<{ user: User, guilds: Guild[] }>('/user')
       .then(({ data }) => {
         setUser(data.user);
         setGuilds(data.guilds);
@@ -32,7 +33,7 @@ export default function App() {
       </header>
 
       {loading ? <p>Loading...</p> : (
-        !user ? <p><a href='/auth/login'>Log in with <strong>Discord</strong></a></p> : (
+        !user || !guilds ? <p><a href='/auth/login'>Log in with <strong>Discord</strong></a></p> : (
           <MainPage user={user} guilds={guilds} />
         )
       )}

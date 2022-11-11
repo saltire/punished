@@ -1,13 +1,19 @@
+import { useState } from 'react';
+
 import './MainPage.scss';
+import GuildConfig from './GuildConfig';
 import Guilds from './Guilds';
+import { Guild, User } from './types';
 
 
 type MainPageProps = {
-  user: any,
-  guilds: any[],
+  user: User,
+  guilds: Guild[],
 };
 
 export default function MainPage({ user, guilds }: MainPageProps) {
+  const [configGuild, setConfigGuild] = useState<Guild | null>(null);
+
   return (
     <main className='MainPage'>
       <header className='user-header'>
@@ -22,7 +28,9 @@ export default function MainPage({ user, guilds }: MainPageProps) {
         <a href='/auth/logout'>Log out</a>
       </header>
 
-      <Guilds guilds={guilds} />
+      {configGuild
+        ? <GuildConfig guild={configGuild} onCancel={() => setConfigGuild(null)} />
+        : <Guilds guilds={guilds} setConfigGuild={setConfigGuild} />}
     </main>
   );
 }

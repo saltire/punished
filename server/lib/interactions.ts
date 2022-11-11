@@ -7,7 +7,8 @@ import {
 } from 'discord-api-types/v10';
 
 import callApi from './api';
-import { defaultPointTypes, getList, updateUserPoints } from './db';
+import { defaultPointTypes } from '../db/pointtypes';
+import { getList, updateUserPoints } from '../db/users';
 
 
 const getOptionValue = (options: any, name: string) => options

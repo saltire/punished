@@ -1,16 +1,18 @@
 import './Guilds.scss';
+import { Guild } from './types';
 
 
 type GuildsProps = {
-  guilds: any[],
+  guilds: Guild[],
+  setConfigGuild: (guild: Guild) => void,
 };
 
-export default function Guilds({ guilds }: GuildsProps) {
+export default function Guilds({ guilds, setConfigGuild }: GuildsProps) {
   return (
     <div className='Guilds'>
-      <p>Your servers</p>
+      <h2>Your servers</h2>
 
-      {guilds?.map((guild: any) => (
+      {guilds?.map(guild => (
         <div key={guild.id}>
           {guild.icon && (
             <img
@@ -33,12 +35,15 @@ export default function Guilds({ guilds }: GuildsProps) {
             <button
               type='button'
               className='green'
+              onClick={() => setConfigGuild(guild)}
             >
               Config ⏵
             </button>
           </div>
         </div>
       ))}
+
+      {}
     </div>
   );
 }

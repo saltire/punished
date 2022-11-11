@@ -3,7 +3,7 @@ import { createHash } from 'crypto';
 import Router from 'express-promise-router';
 import queryString from 'query-string';
 
-import { saveUserSession } from '../lib/db';
+import { saveUserSession } from '../db/usersessions';
 
 
 const appId = process.env.DISCORD_APP_ID || '';
