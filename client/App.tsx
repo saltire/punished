@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 
 import './App.scss';
+import gavelImg from './static/gavel.png';
+import MainPage from './MainPage';
 
 
 export default function App() {
@@ -23,28 +25,13 @@ export default function App() {
   return (
     <div className='App'>
       <header>
-        <h1>PUNISHED</h1>
+        <h1>
+          <img src={gavelImg} alt='PUNISHED' />
+          <span>PUNISHED</span>
+        </h1>
       </header>
-      <main>
-        {loading ? <p>Loading...</p> : (
-          user ? (
-            <>
-              <p>Logged in user: <strong>{user.username}</strong></p>
 
-              <p>
-                User’s guilds:
-                {guilds?.map((guild: any) => (
-                  <span key={guild.id}><br /><strong>{guild.name}</strong></span>
-                ))}
-              </p>
-
-              <p><a href='/auth/logout'>Log out</a></p>
-            </>
-          ) : (
-            <p><a href='/auth/login'>Log in</a></p>
-          )
-        )}
-      </main>
+      {loading ? <p>Loading...</p> : <MainPage user={user} guilds={guilds} />}
     </div>
   );
 }

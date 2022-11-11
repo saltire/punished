@@ -47,7 +47,7 @@ const config: Configuration = {
   plugins: [
     new HtmlPlugin({
       template: path.resolve(__dirname, '../../client/index.ejs'),
-      favicon: path.resolve(__dirname, '../../client/static/favicon.ico'),
+      favicon: path.resolve(__dirname, '../../client/static/gavel.png'),
     }),
   ],
 };
