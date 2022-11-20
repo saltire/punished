@@ -14,7 +14,7 @@ export default function App() {
 
   useEffect(() => {
     setLoading(true);
-    axios.get<{ user: User, guilds: Guild[] }>('/user')
+    axios.get<{ user: User, guilds: Guild[] }>('/app/user')
       .then(({ data }) => {
         setUser(data.user);
         setGuilds(data.guilds);

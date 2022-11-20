@@ -6,7 +6,7 @@ import {
   RESTPostAPIChatInputApplicationCommandsJSONBody as Command,
 } from 'discord-api-types/v10';
 
-import callApi from './api';
+import callApi from './discordApi';
 import { BasePointType } from '../db/pointtypes';
 import { exists } from './utils';
 

@@ -6,7 +6,7 @@ import {
   InteractionType,
 } from 'discord-api-types/v10';
 
-import callApi from './api';
+import callApi from './discordApi';
 import { defaultPointTypes } from '../db/pointtypes';
 import { getList, updateUserPoints } from '../db/users';
 
